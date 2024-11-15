@@ -42,7 +42,7 @@ class ValueIterationAgent(ValueEstimationAgent):
     """
     def __init__(self, mdp, discount = 0.9, iterations = 100):
         """
-          Your value iteration agent should take an mdp on
+          Your value iteration agent should take a markov decision process (MDP) on
           construction, run the indicated number of iterations
           and then act according to the resulting policy.
 
@@ -62,6 +62,32 @@ class ValueIterationAgent(ValueEstimationAgent):
     def runValueIteration(self):
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
+        V = {s: 0 for s in self.states}
+
+        while True:
+            delta = 0
+            for s in self.states:
+                v = V[s]
+                V[s] = max(sum(self.transition_model(s, a, s_next) *
+                               (self.reward_function(s, a, s_next) + self.gamma * V[s_next])
+                               for s_next in self.states) for a in self.actions)
+                delta = max(delta, abs(v - V[s]))
+
+            # Check for convergence
+            if delta < self.epsilon:
+                break
+
+        # Extract optimal policy
+        # Extract optimal policy
+        policy = {}
+        for s in self.states:
+            policy[s] = max(self.actions,
+                            key=lambda a: sum(
+                                self.transition_model(s, a, s_next) *
+                                (self.reward_function(
+                                    s, a, s_next) + self.gamma * V[s_next])
+                                for s_next in self.states))
+        return policy, V
 
 
     def getValue(self, state):
@@ -77,7 +103,10 @@ class ValueIterationAgent(ValueEstimationAgent):
           value function stored in self.values.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        # Determine the value of Q
+        qval = self.getQValue(state, action)
+        return qval
+        #util.raiseNotDefined()
 
     def computeActionFromValues(self, state):
         """
