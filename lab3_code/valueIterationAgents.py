@@ -62,12 +62,25 @@ class ValueIterationAgent(ValueEstimationAgent):
     def runValueIteration(self):
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
+        print("\nstates using mdp:"+str(self.mdp.getStates()))
+        for i in range(self.iterations):
+            newValues = self.values.copy()
+            for state in self.mdp.getStates():
+                maxQvalue = -99999
+                for action in self.mdp.getPossibleActions(state):
+                    Qvalue = self.computeQValueFromValues(state,action)
+                    maxQvalue = max(maxQvalue,Qvalue)
+                    print("max Qvalue: "+str(maxQvalue))
+                newValues[state] = maxQvalue
+            self.values = newValues
+
 
 
     def getValue(self, state):
         """
           Return the value of the state (computed in __init__).
         """
+        print("returns value for that state:"+str(self.values[state]))
         return self.values[state]
 
 
@@ -77,6 +90,17 @@ class ValueIterationAgent(ValueEstimationAgent):
           value function stored in self.values.
         """
         "*** YOUR CODE HERE ***"
+        # i += 1
+        Bellman = 0
+        for nextState, probability in self.mdp.getTransitionStatesAndProbs(state,action):
+            print('state: '+str(state))
+            print('nextState: '+str(nextState))
+            Bellman += probability * (
+                        self.mdp.getReward(state, action, nextState) + self.discount * self.computeActionFromValues(nextState))
+        # Max over alle mogelijke acties uit state over de som van prob van nieuwe state en som reward en som van discounted
+        # loop over alle bestaande states, max => over alle acties loopen, sommaties over alle toekomstige states
+        # gamma is de discount, en Ui(s') is de value van je volgende state
+        return Bellman
         util.raiseNotDefined()
 
     def computeActionFromValues(self, state):
@@ -89,6 +113,17 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
         "*** YOUR CODE HERE ***"
+        if (state == "TERMINAL_STATE"):
+            return None
+        maxValue = -99999
+        for action in self.mdp.getPossibleActions(state):
+            newState = self.mdp.getTransitionStatesAndProbs(state,action)
+            print("newState: "+str(newState))
+            value = self.values[newState]
+            maxValue = max(maxValue,value)
+            if (value > maxValue):
+                bestAction = action
+        return bestAction
         util.raiseNotDefined()
 
     def getPolicy(self, state):
