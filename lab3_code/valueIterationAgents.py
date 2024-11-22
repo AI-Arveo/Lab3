@@ -51,7 +51,7 @@ class ValueIterationAgent(ValueEstimationAgent):
                     newValues[state] = 0  # Assign a reward of 0 for terminal states
                     continue
 
-                maxQValue = float('-inf')  # Initialize max Q-value as negative infinity
+                maxQValue = -99999  # Initialize max Q-value as negative infinity
 
                 # Iterate over all possible actions from the current state
                 for action in self.mdp.getPossibleActions(state):
@@ -75,14 +75,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         Compute the Q-value of action in state from the value function stored in self.values.
         """
         Bellman = 0
-<<<<<<< HEAD
         for nextState, probability in self.mdp.getTransitionStatesAndProbs(state, action):
-=======
-        for nextState, probability in self.mdp.getTransitionStatesAndProbs(state,action):
-            #print('state: '+str(state))
-            #print('nextState: '+str(nextState))
-            print('reward: '+str(self.mdp.getReward(state,action,nextState)))
->>>>>>> origin/main
             Bellman += probability * (
                     self.mdp.getReward(state, action, nextState) + self.discount * self.values[nextState]
             )
@@ -95,32 +88,11 @@ class ValueIterationAgent(ValueEstimationAgent):
 
         If the state is terminal, return None.
         """
-        if state == "TERMINAL_STATE" or self.mdp.isTerminal(state):
+        if state == "TERMINAL_STATE":
             return None
-<<<<<<< HEAD
-=======
-        maxValue = -99999
-        #actions = self.mdp.getPossibleActions(state)
-        print("acions: "+str(actions))
 
-        for action in self.mdp.getPossibleActions(state):
-            newState = self.mdp.getTransitionStatesAndProbs(state,action)
-            #print("newState: "+str(newState))
-            for probState, _ in newState:
-                if (probState == "TERMINAL_STATE"):
-                    return action
-                value = self.values[probState]
-                if (value > maxValue):
-                    bestAction = action
-                    #print("value: "+str(value))
-                    maxValue = max(maxValue,value)
-        #print('bestAction: '+str(bestAction))
-        return bestAction
-        util.raiseNotDefined()
->>>>>>> origin/main
-
-        maxValue = float('-inf')  # Use negative infinity for the initial max value
-        bestAction = None  # Initialize best action as None
+        maxValue = float('-inf')  #Gebruik een zeer lage waarde zodat alle values sowieso hoger zijn
+        bestAction = None  #Initialize best action as None
 
         # Iterate through possible actions
         for action in self.mdp.getPossibleActions(state):
@@ -174,7 +146,7 @@ class AsynchronousValueIterationAgent(ValueIterationAgent):
         for i in range(self.iterations):
             state = states[i % len(states)]
             if not self.mdp.isTerminal(state):
-                maxQValue = float('-inf')
+                maxQValue = -99999
                 for action in self.mdp.getPossibleActions(state):
                     qValue = self.computeQValueFromValues(state, action)
                     maxQValue = max(maxQValue, qValue)
