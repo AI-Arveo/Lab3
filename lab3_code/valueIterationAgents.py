@@ -90,6 +90,8 @@ class ValueIterationAgent(ValueEstimationAgent):
         """
         if state == "TERMINAL_STATE":
             return None
+        maxValue = -99999
+        #actions = self.mdp.getPossibleActions(state)
 
         maxValue = -99999  #Gebruik een zeer lage waarde zodat alle values sowieso hoger zijn
         bestAction = None  #Initialize best action as None
