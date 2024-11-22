@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -18,7 +18,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -62,32 +62,7 @@ class ValueIterationAgent(ValueEstimationAgent):
     def runValueIteration(self):
         # Write value iteration code here
         "*** YOUR CODE HERE ***"
-        V = {s: 0 for s in self.states}
 
-        while True:
-            delta = 0
-            for s in self.states:
-                v = V[s]
-                V[s] = max(sum(self.transition_model(s, a, s_next) *
-                               (self.reward_function(s, a, s_next) + self.gamma * V[s_next])
-                               for s_next in self.states) for a in self.actions)
-                delta = max(delta, abs(v - V[s]))
-
-            # Check for convergence
-            if delta < self.epsilon:
-                break
-
-        # Extract optimal policy
-        # Extract optimal policy
-        policy = {}
-        for s in self.states:
-            policy[s] = max(self.actions,
-                            key=lambda a: sum(
-                                self.transition_model(s, a, s_next) *
-                                (self.reward_function(
-                                    s, a, s_next) + self.gamma * V[s_next])
-                                for s_next in self.states))
-        return policy, V
 
 
     def getValue(self, state):
@@ -103,10 +78,18 @@ class ValueIterationAgent(ValueEstimationAgent):
           value function stored in self.values.
         """
         "*** YOUR CODE HERE ***"
-        # Determine the value of Q
-        qval = self.getQValue(state, action)
+
+        qval = 0
+
+        # Neem het max van alle mogelijke acties van die state over de som van alle mogelijke nieuwe state
+        for states, prob in self.mdp.getTransitionStatesAndProbs(state, action):
+            # Get de reward voor deze transitie
+            reward = self.mdp.getReward(state, action, states)
+
+            # Bereken de toevoeging aan de Q-Value van deze transitie
+            qval += prob * (reward + self.discount * self.values[states])
+
         return qval
-        #util.raiseNotDefined()
 
     def computeActionFromValues(self, state):
         """
@@ -118,7 +101,9 @@ class ValueIterationAgent(ValueEstimationAgent):
           terminal state, you should return None.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        
+
+        #util.raiseNotDefined()
 
     def getPolicy(self, state):
         return self.computeActionFromValues(state)
@@ -159,6 +144,7 @@ class AsynchronousValueIterationAgent(ValueIterationAgent):
 
     def runValueIteration(self):
         "*** YOUR CODE HERE ***"
+
 
 class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
     """
