@@ -65,6 +65,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         print("\nstates using mdp:"+str(self.mdp.getStates()))
         for i in range(self.iterations):
             newValues = self.values.copy()
+            #path = list(self.mdp.getPath())
             for state in self.mdp.getStates():
                 maxQvalue = -99999
                 for action in self.mdp.getPossibleActions(state):
