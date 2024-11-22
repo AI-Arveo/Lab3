@@ -4,7 +4,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -18,7 +18,7 @@
 # educational purposes provided that (1) you do not distribute or publish
 # solutions, (2) you retain this notice, and (3) you provide clear
 # attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
 # The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
@@ -42,7 +42,7 @@ class ValueIterationAgent(ValueEstimationAgent):
     """
     def __init__(self, mdp, discount = 0.9, iterations = 100):
         """
-          Your value iteration agent should take an mdp on
+          Your value iteration agent should take a markov decision process (MDP) on
           construction, run the indicated number of iterations
           and then act according to the resulting policy.
 
@@ -103,6 +103,18 @@ class ValueIterationAgent(ValueEstimationAgent):
         return Bellman
         util.raiseNotDefined()
 
+        qval = 0
+
+        # Neem het max van alle mogelijke acties van die state over de som van alle mogelijke nieuwe state
+        for states, prob in self.mdp.getTransitionStatesAndProbs(state, action):
+            # Get de reward voor deze transitie
+            reward = self.mdp.getReward(state, action, states)
+
+            # Bereken de toevoeging aan de Q-Value van deze transitie
+            qval += prob * (reward + self.discount * self.values[states])
+
+        return qval
+
     def computeActionFromValues(self, state):
         """
           The policy is the best action in the given state
@@ -125,6 +137,8 @@ class ValueIterationAgent(ValueEstimationAgent):
                 bestAction = action
         return bestAction
         util.raiseNotDefined()
+
+        #util.raiseNotDefined()
 
     def getPolicy(self, state):
         return self.computeActionFromValues(state)
@@ -165,6 +179,7 @@ class AsynchronousValueIterationAgent(ValueIterationAgent):
 
     def runValueIteration(self):
         "*** YOUR CODE HERE ***"
+
 
 class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
     """
