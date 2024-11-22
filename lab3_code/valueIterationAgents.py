@@ -91,7 +91,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         if state == "TERMINAL_STATE":
             return None
 
-        maxValue = float('-inf')  #Gebruik een zeer lage waarde zodat alle values sowieso hoger zijn
+        maxValue = -99999  #Gebruik een zeer lage waarde zodat alle values sowieso hoger zijn
         bestAction = None  #Initialize best action as None
 
         # Iterate through possible actions
