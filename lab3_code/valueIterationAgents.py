@@ -75,7 +75,14 @@ class ValueIterationAgent(ValueEstimationAgent):
         Compute the Q-value of action in state from the value function stored in self.values.
         """
         Bellman = 0
+<<<<<<< HEAD
         for nextState, probability in self.mdp.getTransitionStatesAndProbs(state, action):
+=======
+        for nextState, probability in self.mdp.getTransitionStatesAndProbs(state,action):
+            #print('state: '+str(state))
+            #print('nextState: '+str(nextState))
+            print('reward: '+str(self.mdp.getReward(state,action,nextState)))
+>>>>>>> origin/main
             Bellman += probability * (
                     self.mdp.getReward(state, action, nextState) + self.discount * self.values[nextState]
             )
@@ -90,6 +97,27 @@ class ValueIterationAgent(ValueEstimationAgent):
         """
         if state == "TERMINAL_STATE" or self.mdp.isTerminal(state):
             return None
+<<<<<<< HEAD
+=======
+        maxValue = -99999
+        #actions = self.mdp.getPossibleActions(state)
+        print("acions: "+str(actions))
+
+        for action in self.mdp.getPossibleActions(state):
+            newState = self.mdp.getTransitionStatesAndProbs(state,action)
+            #print("newState: "+str(newState))
+            for probState, _ in newState:
+                if (probState == "TERMINAL_STATE"):
+                    return action
+                value = self.values[probState]
+                if (value > maxValue):
+                    bestAction = action
+                    #print("value: "+str(value))
+                    maxValue = max(maxValue,value)
+        #print('bestAction: '+str(bestAction))
+        return bestAction
+        util.raiseNotDefined()
+>>>>>>> origin/main
 
         maxValue = float('-inf')  # Use negative infinity for the initial max value
         bestAction = None  # Initialize best action as None
