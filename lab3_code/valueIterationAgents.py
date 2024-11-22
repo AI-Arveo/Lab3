@@ -80,7 +80,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         """
           Return the value of the state (computed in __init__).
         """
-        print("returns value for that state:"+str(self.values[state]))
+        #print("returns value for that state:"+str(self.values[state]))
         return self.values[state]
 
 
@@ -93,27 +93,15 @@ class ValueIterationAgent(ValueEstimationAgent):
         # i += 1
         Bellman = 0
         for nextState, probability in self.mdp.getTransitionStatesAndProbs(state,action):
-            print('state: '+str(state))
-            print('nextState: '+str(nextState))
+            #print('state: '+str(state))
+            #print('nextState: '+str(nextState))
             Bellman += probability * (
-                        self.mdp.getReward(state, action, nextState) + self.discount * self.computeActionFromValues(nextState))
+                        self.mdp.getReward(state, action, nextState) + self.discount * self.values[nextState])
         # Max over alle mogelijke acties uit state over de som van prob van nieuwe state en som reward en som van discounted
         # loop over alle bestaande states, max => over alle acties loopen, sommaties over alle toekomstige states
         # gamma is de discount, en Ui(s') is de value van je volgende state
         return Bellman
         util.raiseNotDefined()
-
-        qval = 0
-
-        # Neem het max van alle mogelijke acties van die state over de som van alle mogelijke nieuwe state
-        for states, prob in self.mdp.getTransitionStatesAndProbs(state, action):
-            # Get de reward voor deze transitie
-            reward = self.mdp.getReward(state, action, states)
-
-            # Bereken de toevoeging aan de Q-Value van deze transitie
-            qval += prob * (reward + self.discount * self.values[states])
-
-        return qval
 
     def computeActionFromValues(self, state):
         """
@@ -128,13 +116,20 @@ class ValueIterationAgent(ValueEstimationAgent):
         if (state == "TERMINAL_STATE"):
             return None
         maxValue = -99999
+        #actions = self.mdp.getPossibleActions(state)
+        #print("acions: "+str(actions))
         for action in self.mdp.getPossibleActions(state):
             newState = self.mdp.getTransitionStatesAndProbs(state,action)
-            print("newState: "+str(newState))
-            value = self.values[newState]
-            maxValue = max(maxValue,value)
-            if (value > maxValue):
-                bestAction = action
+            #print("newState: "+str(newState))
+            for probState, _ in newState:
+                if (probState == "TERMINAL_STATE"):
+                    return action
+                value = self.values[probState]
+                if (value > maxValue):
+                    bestAction = action
+                    #print("value: "+str(value))
+                    maxValue = max(maxValue,value)
+        #print('bestAction: '+str(bestAction))
         return bestAction
         util.raiseNotDefined()
 
