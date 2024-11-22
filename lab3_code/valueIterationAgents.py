@@ -95,6 +95,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         for nextState, probability in self.mdp.getTransitionStatesAndProbs(state,action):
             #print('state: '+str(state))
             #print('nextState: '+str(nextState))
+            print('reward: '+str(self.mdp.getReward(state,action,nextState)))
             Bellman += probability * (
                         self.mdp.getReward(state, action, nextState) + self.discount * self.values[nextState])
         # Max over alle mogelijke acties uit state over de som van prob van nieuwe state en som reward en som van discounted
@@ -117,7 +118,8 @@ class ValueIterationAgent(ValueEstimationAgent):
             return None
         maxValue = -99999
         #actions = self.mdp.getPossibleActions(state)
-        #print("acions: "+str(actions))
+        print("acions: "+str(actions))
+
         for action in self.mdp.getPossibleActions(state):
             newState = self.mdp.getTransitionStatesAndProbs(state,action)
             #print("newState: "+str(newState))
