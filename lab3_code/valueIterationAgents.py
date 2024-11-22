@@ -11,189 +11,168 @@
 # Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
-
-# valueIterationAgents.py
-# -----------------------
-# Licensing Information:  You are free to use or extend these projects for
-# educational purposes provided that (1) you do not distribute or publish
-# solutions, (2) you retain this notice, and (3) you provide clear
-# attribution to UC Berkeley, including a link to http://ai.berkeley.edu.
-#
-# Attribution Information: The Pacman AI projects were developed at UC Berkeley.
-# The core projects and autograders were primarily created by John DeNero
-# (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
-# Student side autograding was added by Brad Miller, Nick Hay, and
-# Pieter Abbeel (pabbeel@cs.berkeley.edu).
-
-
 import mdp, util
-
 from learningAgents import ValueEstimationAgent
-import collections
+
 
 class ValueIterationAgent(ValueEstimationAgent):
     """
-        * Please read learningAgents.py before reading this.*
-
-        A ValueIterationAgent takes a Markov decision process
-        (see mdp.py) on initialization and runs value iteration
-        for a given number of iterations using the supplied
-        discount factor.
+        A ValueIterationAgent takes a Markov decision process (MDP) on
+        initialization and runs value iteration for a given number of iterations
+        using the supplied discount factor.
     """
-    def __init__(self, mdp, discount = 0.9, iterations = 100):
-        """
-          Your value iteration agent should take a markov decision process (MDP) on
-          construction, run the indicated number of iterations
-          and then act according to the resulting policy.
 
-          Some useful mdp methods you will use:
-              mdp.getStates()
-              mdp.getPossibleActions(state)
-              mdp.getTransitionStatesAndProbs(state, action)
-              mdp.getReward(state, action, nextState)
-              mdp.isTerminal(state)
+    def __init__(self, mdp, discount=0.9, iterations=100):
+        """
+        Initialize the ValueIterationAgent:
+        - mdp: The Markov decision process.
+        - discount: Discount factor for future rewards.
+        - iterations: Number of iterations for value iteration.
         """
         self.mdp = mdp
         self.discount = discount
         self.iterations = iterations
-        self.values = util.Counter() # A Counter is a dict with default 0
+        self.values = util.Counter()  # A Counter is a dict with default 0
         self.runValueIteration()
 
     def runValueIteration(self):
-        # Write value iteration code here
-        "*** YOUR CODE HERE ***"
-        print("\nstates using mdp:"+str(self.mdp.getStates()))
+        """
+        Perform value iteration to compute the optimal policy.
+        """
+        print("\nStates using MDP:", self.mdp.getStates())
+
         for i in range(self.iterations):
-            newValues = self.values.copy()
-            #path = list(self.mdp.getPath())
+            newValues = self.values.copy()  # Create a copy of current values for update
+
+            # Iterate over all states in the MDP
             for state in self.mdp.getStates():
-                maxQvalue = -99999
+                if self.mdp.isTerminal(state):
+                    # For terminal states, set the value explicitly and skip computation
+                    newValues[state] = 0  # Assign a reward of 0 for terminal states
+                    continue
+
+                maxQValue = float('-inf')  # Initialize max Q-value as negative infinity
+
+                # Iterate over all possible actions from the current state
                 for action in self.mdp.getPossibleActions(state):
-                    Qvalue = self.computeQValueFromValues(state,action)
-                    maxQvalue = max(maxQvalue,Qvalue)
-                    print("max Qvalue: "+str(maxQvalue))
-                newValues[state] = maxQvalue
+                    qValue = self.computeQValueFromValues(state, action)
+                    maxQValue = max(maxQValue, qValue)  # Update the max Q-value
+
+                # Update the value for the state
+                newValues[state] = maxQValue
+
+            # Update the values for the next iteration
             self.values = newValues
-
-
 
     def getValue(self, state):
         """
-          Return the value of the state (computed in __init__).
+        Return the value of the state (computed in __init__).
         """
-        #print("returns value for that state:"+str(self.values[state]))
         return self.values[state]
-
 
     def computeQValueFromValues(self, state, action):
         """
-          Compute the Q-value of action in state from the
-          value function stored in self.values.
+        Compute the Q-value of action in state from the value function stored in self.values.
         """
-        "*** YOUR CODE HERE ***"
-        # i += 1
         Bellman = 0
-        for nextState, probability in self.mdp.getTransitionStatesAndProbs(state,action):
-            #print('state: '+str(state))
-            #print('nextState: '+str(nextState))
+        for nextState, probability in self.mdp.getTransitionStatesAndProbs(state, action):
             Bellman += probability * (
-                        self.mdp.getReward(state, action, nextState) + self.discount * self.values[nextState])
-        # Max over alle mogelijke acties uit state over de som van prob van nieuwe state en som reward en som van discounted
-        # loop over alle bestaande states, max => over alle acties loopen, sommaties over alle toekomstige states
-        # gamma is de discount, en Ui(s') is de value van je volgende state
+                    self.mdp.getReward(state, action, nextState) + self.discount * self.values[nextState]
+            )
         return Bellman
-        util.raiseNotDefined()
 
     def computeActionFromValues(self, state):
         """
-          The policy is the best action in the given state
-          according to the values currently stored in self.values.
+        The policy is the best action in the given state
+        according to the values currently stored in self.values.
 
-          You may break ties any way you see fit.  Note that if
-          there are no legal actions, which is the case at the
-          terminal state, you should return None.
+        If the state is terminal, return None.
         """
-        "*** YOUR CODE HERE ***"
-        if (state == "TERMINAL_STATE"):
+        if state == "TERMINAL_STATE" or self.mdp.isTerminal(state):
             return None
-        maxValue = -99999
-        #actions = self.mdp.getPossibleActions(state)
-        #print("acions: "+str(actions))
-        for action in self.mdp.getPossibleActions(state):
-            newState = self.mdp.getTransitionStatesAndProbs(state,action)
-            #print("newState: "+str(newState))
-            for probState, _ in newState:
-                if (probState == "TERMINAL_STATE"):
-                    return action
-                value = self.values[probState]
-                if (value > maxValue):
-                    bestAction = action
-                    #print("value: "+str(value))
-                    maxValue = max(maxValue,value)
-        #print('bestAction: '+str(bestAction))
-        return bestAction
-        util.raiseNotDefined()
 
-        #util.raiseNotDefined()
+        maxValue = float('-inf')  # Use negative infinity for the initial max value
+        bestAction = None  # Initialize best action as None
+
+        # Iterate through possible actions
+        for action in self.mdp.getPossibleActions(state):
+            qValue = self.computeQValueFromValues(state, action)
+            if qValue > maxValue:
+                maxValue = qValue
+                bestAction = action
+
+        return bestAction
 
     def getPolicy(self, state):
+        """
+        Return the optimal policy (best action) for the given state.
+        """
         return self.computeActionFromValues(state)
 
     def getAction(self, state):
-        "Returns the policy at the state (no exploration)."
+        """
+        Returns the policy at the state (no exploration).
+        """
         return self.computeActionFromValues(state)
 
     def getQValue(self, state, action):
+        """
+        Returns the Q-value for the given state and action.
+        """
         return self.computeQValueFromValues(state, action)
+
 
 class AsynchronousValueIterationAgent(ValueIterationAgent):
     """
-        * Please read learningAgents.py before reading this.*
-
-        An AsynchronousValueIterationAgent takes a Markov decision process
-        (see mdp.py) on initialization and runs cyclic value iteration
-        for a given number of iterations using the supplied
-        discount factor.
+        An AsynchronousValueIterationAgent takes a Markov decision process (MDP) on
+        initialization and runs cyclic value iteration for a given number of iterations
+        using the supplied discount factor.
     """
-    def __init__(self, mdp, discount = 0.9, iterations = 1000):
-        """
-          Your cyclic value iteration agent should take an mdp on
-          construction, run the indicated number of iterations,
-          and then act according to the resulting policy. Each iteration
-          updates the value of only one state, which cycles through
-          the states list. If the chosen state is terminal, nothing
-          happens in that iteration.
 
-          Some useful mdp methods you will use:
-              mdp.getStates()
-              mdp.getPossibleActions(state)
-              mdp.getTransitionStatesAndProbs(state, action)
-              mdp.getReward(state)
-              mdp.isTerminal(state)
+    def __init__(self, mdp, discount=0.9, iterations=1000):
+        """
+        Initialize the AsynchronousValueIterationAgent:
+        - mdp: The Markov decision process.
+        - discount: Discount factor for future rewards.
+        - iterations: Number of iterations for cyclic updates.
         """
         ValueIterationAgent.__init__(self, mdp, discount, iterations)
 
     def runValueIteration(self):
-        "*** YOUR CODE HERE ***"
+        """
+        Perform asynchronous value iteration.
+        """
+        states = self.mdp.getStates()
+        for i in range(self.iterations):
+            state = states[i % len(states)]
+            if not self.mdp.isTerminal(state):
+                maxQValue = float('-inf')
+                for action in self.mdp.getPossibleActions(state):
+                    qValue = self.computeQValueFromValues(state, action)
+                    maxQValue = max(maxQValue, qValue)
+                self.values[state] = maxQValue
 
 
 class PrioritizedSweepingValueIterationAgent(AsynchronousValueIterationAgent):
     """
-        * Please read learningAgents.py before reading this.*
-
         A PrioritizedSweepingValueIterationAgent takes a Markov decision process
-        (see mdp.py) on initialization and runs prioritized sweeping value iteration
-        for a given number of iterations using the supplied parameters.
+        on initialization and runs prioritized sweeping value iteration.
     """
-    def __init__(self, mdp, discount = 0.9, iterations = 100, theta = 1e-5):
+
+    def __init__(self, mdp, discount=0.9, iterations=100, theta=1e-5):
         """
-          Your prioritized sweeping value iteration agent should take an mdp on
-          construction, run the indicated number of iterations,
-          and then act according to the resulting policy.
+        Initialize the PrioritizedSweepingValueIterationAgent:
+        - mdp: The Markov decision process.
+        - discount: Discount factor for future rewards.
+        - iterations: Number of iterations for prioritized updates.
+        - theta: Threshold for priority queue updates.
         """
         self.theta = theta
         ValueIterationAgent.__init__(self, mdp, discount, iterations)
 
     def runValueIteration(self):
+        """
+        Perform prioritized sweeping value iteration.
+        """
+        # Placeholder for prioritized sweeping logic.
         "*** YOUR CODE HERE ***"
-
