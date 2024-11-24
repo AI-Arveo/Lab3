@@ -132,6 +132,8 @@ class QLearningAgent(ReinforcementAgent):
           it will be called on your behalf
         """
         "*** YOUR CODE HERE ***"
+
+
         util.raiseNotDefined()
 
     def getPolicy(self, state):
@@ -195,7 +197,12 @@ class ApproximateQAgent(PacmanQAgent):
           where * is the dotProduct operator
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        feat = self.featExtractor(state)
+        features = feat.getFeatures(state, action)
+        qval = 0
+        for feature in features.keys():
+            qval += self.weights[feature] * features[feature]
+        return qval
 
     def update(self, state, action, nextState, reward):
         """
