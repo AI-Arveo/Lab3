@@ -132,7 +132,17 @@ class QLearningAgent(ReinforcementAgent):
           it will be called on your behalf
         """
         "*** YOUR CODE HERE ***"
-
+        # print("state: "+str(state))
+        # print("action: "+str(action))
+        # print("nextState: "+str(nextState))
+        # print("reward: "+str(reward))
+        maxNextQ = -9999
+        for nextAction in self.getLegalActions(nextState):
+            Qval = self.getQValue(nextState,nextAction)
+            if (Qval > maxNextQ):
+                maxNextQ = Qval
+        updateQ = (1-self.alpha)*self.getQValue(state,action) + self.alpha*(reward+self.discount*maxNextQ)
+        return updateQ
 
         util.raiseNotDefined()
 
