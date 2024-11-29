@@ -51,7 +51,7 @@ class ValueIterationAgent(ValueEstimationAgent):
                     newValues[state] = 0  # Assign a reward of 0 for terminal states
                     continue
 
-                maxQValue = -99999  # Initialize max Q-value as negative infinity
+                maxQValue = -math.inf  # Initialize max Q-value as negative infinity
 
                 # Iterate over all possible actions from the current state
                 for action in self.mdp.getPossibleActions(state):
@@ -91,7 +91,7 @@ class ValueIterationAgent(ValueEstimationAgent):
         if state == "TERMINAL_STATE":
             return None
 
-        maxValue = -99999  #Gebruik een zeer lage waarde zodat alle values sowieso hoger zijn
+        maxValue = -math.inf  #Gebruik een zeer lage waarde zodat alle values sowieso hoger zijn
         bestAction = None  #Initialize best action as None
 
         # Iterate through possible actions
@@ -146,7 +146,7 @@ class AsynchronousValueIterationAgent(ValueIterationAgent):
         for i in range(self.iterations):
             state = states[i % len(states)]
             if not self.mdp.isTerminal(state):
-                maxQValue = -99999
+                maxQValue = -math.inf
                 for action in self.mdp.getPossibleActions(state):
                     qValue = self.computeQValueFromValues(state, action)
                     maxQValue = max(maxQValue, qValue)

@@ -67,7 +67,7 @@ class QLearningAgent(ReinforcementAgent):
         maxLegal = self.getLegalActions(state)
         if not maxLegal:
             return 0.0
-        maxQValue = -99999
+        maxQValue = -math.inf
         for maxAction in maxLegal:
             if self.getQValue(state, maxAction) > maxQValue:
                 maxQValue = self.getQValue(state, maxAction)
@@ -85,13 +85,14 @@ class QLearningAgent(ReinforcementAgent):
         if state == "TERMINAL_STATE":
             return None
 
-        maxValue = -99999
+        maxValue = -math.inf
         bestAction = []
 
         # Iterate through possible actions
         for action in self.getLegalActions(state):
             if self.getQValue(state, action) > maxValue:
                 maxValue = self.getQValue(state, action)
+                bestAction.clear()
                 bestAction.append(action)
             elif self.getQValue(state, action) == maxValue:
                 bestAction.append(action)
@@ -135,11 +136,12 @@ class QLearningAgent(ReinforcementAgent):
         # print("action: "+str(action))
         # print("nextState: "+str(nextState))
         # print("reward: "+str(reward))
-        maxNextQ = 0
-        for nextAction in self.getLegalActions(nextState):
-            Qval = self.getQValue(nextState,nextAction)
-            if (abs(Qval) > maxNextQ):
-                maxNextQ = Qval
+        # maxNextQ = 0
+        # for nextAction in self.getLegalActions(nextState):
+        #     Qval = self.getQValue(nextState,nextAction)
+        #     if (abs(Qval) > maxNextQ):
+        #         maxNextQ = Qval
+        maxNextQ = self.computeValueFromQValues(nextState)
         updateQ = (1-self.alpha)*self.getQValue(state,action) + self.alpha*(reward+self.discount*maxNextQ)
         self.qvalue[state,action] = updateQ
         return updateQ
