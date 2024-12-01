@@ -210,38 +210,34 @@ class ApproximateQAgent(PacmanQAgent):
           where * is the dotProduct operator
         """
         "*** YOUR CODE HERE ***"
-        feat = self.featExtractor(state)
-        features = feat.getFeatures(state, action)
+        feat = self.featExtractor.getFeatures(state, action)
+        #features = feat.getFeatures(state, action)
         qval = 0
-        for feature in features.keys():
-            qval += self.weights[feature] * features[feature]
+        for feature in feat.keys():
+            qval += self.weights[feature] * feat[feature]
         return qval
 
     def update(self, state, action, nextState, reward):
         """
-           Should update your weights based on transition
+           Update the weights based on the transition.
+           Implements the weight update rule for Approximate Q-Learning.
         """
-        "*** YOUR CODE HERE ***"
-
+        # Calculate max Q-value for the next state
         actionsFromNextState = self.getLegalActions(nextState)
-        maxQnext = -math.inf
-        for action in actionsFromNextState:
-            if maxQnext > self.getQValue(state, action):
-                maxQnext = self.getQValue(state, action)
-                self.weights[action] = maxQnext
+        if not actionsFromNextState:
+            maxQnext = 0  # No legal actions means terminal state
+        else:
+            maxQnext = max(self.getQValue(nextState, a) for a in actionsFromNextState)
 
+        # Compute the temporal difference (TD error)
         difference = (reward + self.discount * maxQnext) - self.getQValue(state, action)
+
+        # Get features for the current (state, action) pair
         features = self.featExtractor.getFeatures(state, action)
-        qval = self.getQValue(state, action)
-        qval += self.alpha * difference
-        for feature in features.keys():
-            self.weights[feature] += self.alpha * features[feature]
-            self.weights[action] += self.alpha * difference
 
-
-
-
-
+        # Update weights for each feature
+        for feature, value in features.items():
+            self.weights[feature] += self.alpha * difference * value
 
     def final(self, state):
         "Called at the end of each game."
