@@ -55,7 +55,7 @@ def question3d():
 def question3e():
     answerDiscount = 0.5
     answerNoise = 0.1
-    answerLivingReward = 5 #Geen simpelweg een heel hoge LivingReward zodat zoveel mogelijk stappen nemen beloond wordt
+    answerLivingReward = 5 #simpelweg een heel hoge LivingReward zodat zoveel mogelijk stappen nemen beloond wordt
     return answerDiscount, answerNoise, answerLivingReward
     # If not possible, return 'NOT POSSIBLE'
 

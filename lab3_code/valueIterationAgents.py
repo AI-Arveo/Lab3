@@ -13,6 +13,7 @@
 
 import mdp, util
 from learningAgents import ValueEstimationAgent
+import math
 
 
 class ValueIterationAgent(ValueEstimationAgent):
